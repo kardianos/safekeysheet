@@ -130,10 +130,14 @@ func generatePDF(kdbxFn *string, tagName string) task.Action {
 			re := rootEntry{
 				Title:       e.GetTitle(),
 				Password:    e.GetPassword(),
+				Username:    e.GetContent("UserName"),
+				URL:         e.GetContent("URL"),
 				Description: e.GetContent("Notes"),
 			}
 			if re.Title == tagName {
 				r.KDBX.Description = re.Description
+				r.KDBX.Username = re.Username
+				r.KDBX.URL = re.URL
 				continue
 			}
 			r.Entry = append(r.Entry, re)
@@ -231,6 +235,8 @@ func renderRoot(w io.Writer, r root) error {
 type rootEntry struct {
 	Title       string
 	Password    string
+	Username    string
+	URL         string
 	Description string
 }
 
@@ -255,31 +261,56 @@ table {
 td {
 	vertical-align: top;
 }
+label {
+	font-weight: bold;
+}
+.value {
+	overflow-wrap: anywhere;
+	font-family: monospace;
+	margin-left: 8px;
+}
+table {
+	width: 100%;
+}
+th.top {
+	border-top: 3px solid black;
+}
+td.left {
+	width: 35%;
+}
+td.right {
+	border-left: 1px solid grey;
+}
 </style>
 
 {{define "pass"}}
 {{if $}}
-	<img class="barcode" src="{{datamatrix $ 12}}">
+	<img class="barcode" src="{{datamatrix $ 4}}">
 {{end}}
 {{end}}
 
 {{define "item"}}
 <table>
 <tr>
-	<th colspan=2>{{.Title}}
+	<th colspan=2 class=top>{{.Title}}
 <tr>
-	<td>{{template "pass" .Password}}
-	<td>
+	<td class=left>
+		{{if .Username}}<div><label>Username:</label> <div class=value>{{.Username}}</div></div>{{end}}
+		{{if .Password}}<div><label>Password:</label> <div class=value>{{.Password}}</div></div>{{end}}
+		{{template "pass" .Password}}
+	<td class=right>
 		<div class=ins>
 			{{markdown .Description}}
 		</div>
+		{{if .URL}}<div><label>URL:</label> <div class=value>{{.URL}}</div></div>{{end}}
 </table>
 {{end}}
+
+<h1>Created {{.Now}}</h1>
 
 {{template "item" .KDBX}}
 
 {{range .Entry}}
-	<hr>
 	{{template "item" .}}
 {{end}}
 
