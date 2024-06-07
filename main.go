@@ -251,6 +251,8 @@ const htmlFile = `<!DOCTYPE html>
 <style>
 .ins {
 	padding: 8px;
+	font-family: sans-serif;
+	font-size: 60%;
 }
 .barcode {
 	padding: 16px;
@@ -269,6 +271,11 @@ label {
 	font-family: monospace;
 	margin-left: 8px;
 }
+.ts {
+	font-weight: bold;
+	font-family: monospace;
+	font-size: 10px;
+}
 table {
 	width: 100%;
 }
@@ -276,7 +283,7 @@ th.top {
 	border-top: 3px solid black;
 }
 td.left {
-	width: 35%;
+	width: 25%;
 }
 td.right {
 	border-left: 1px solid grey;
@@ -306,7 +313,7 @@ td.right {
 </table>
 {{end}}
 
-<h1>Created {{.Now}}</h1>
+<div class=ts>Created {{.Now}}</div>
 
 {{template "item" .KDBX}}
 
